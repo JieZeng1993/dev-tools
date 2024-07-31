@@ -4,3 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+log = "0.4"
+log4rs = {version = "1.0"  , features = ["gzip"]}
+
+egui = "0.28.1"
+eframe = "0.28.1"
+rfd = "0.14"
