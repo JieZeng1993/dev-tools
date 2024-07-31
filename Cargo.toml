@@ -10,3 +10,9 @@ log4rs = {version = "1.0"  , features = ["gzip"]}
 egui = "0.28.1"
 eframe = "0.28.1"
 rfd = "0.14"
+
+[[bin]]
+name = "folder-tree"
+path = "src/main.rs"
+# 添加下面这行来指示编译器生成一个没有控制台窗口的 GUI 应用
+windows_subsystem = "windows"
