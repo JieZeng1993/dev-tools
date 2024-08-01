@@ -1,3 +1,4 @@
+use egui::Ui;
 use log::info;
 
 mod tool;
@@ -77,6 +78,15 @@ impl AppInstance {
     pub fn change_tool_type(&mut self, tool_type: ToolType) {
         self.tool_type = tool_type;
     }
+
+    /// 重新选择工具
+    pub fn reselect_tool(&mut self, ui: &mut Ui) {
+        if !ui.button("重新选择工具").clicked() {
+            //未点击
+            return;
+        }
+        self.tool_type = ToolType::Unselected;
+    }
 }
 
 impl eframe::App for AppInstance {
@@ -92,17 +102,18 @@ impl eframe::App for AppInstance {
                             ui.selectable_value(&mut self.tool_type, color.clone(), color.as_label());
                         }
                     });
-
-                // // 显示当前选择的颜色
-                // ui.label(format!("Selected color: {}", self.selected_color.as_str()));
-
                 return;
             }
+            //设置全局的退出
+            self.reselect_tool(ui);
 
             let tool_type = &mut self.tool_type;
             match tool_type {
                 ToolType::FolderTree(folder_tree) => {
-                    folder_tree.add_choose_folder_button(ui);
+                    ui.horizontal(|ui| {
+                        folder_tree.add_choose_folder_button(ui);
+                        folder_tree.show_select_file_info(ui);
+                    });
                     folder_tree.show_sub_file_info(ui);
                 }
                 ToolType::DecompressStr => {}
