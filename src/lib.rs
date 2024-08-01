@@ -1,19 +1,18 @@
-use std::fs;
+use log::info;
 
-use egui::Ui;
-use log::error;
-use rfd::FileDialog;
+mod tool;
+
 #[derive(PartialEq, Clone)]
 pub enum ToolType {
     Unselected,
-    FolderTree(FolderTree),
+    FolderTree(tool::FolderTreeTool),
     DecompressStr,
 }
 
 impl ToolType {
     // 获得枚举的所有值
     pub fn iter() -> Vec<ToolType> {
-        vec![ToolType::Unselected, ToolType::FolderTree(FolderTree::new()), ToolType::DecompressStr]
+        vec![ToolType::Unselected, ToolType::FolderTree(tool::FolderTreeTool::new()), ToolType::DecompressStr]
     }
 
     // 将枚举转换为字符串表示，用于显示
@@ -26,69 +25,90 @@ impl ToolType {
     }
 }
 
-/// 文件夹处理
-#[derive(PartialEq, Clone)]
-pub struct FolderTree {
-    pub folder_path: String,
-    pub files: Vec<String>,
+pub struct AppInstance {
+    tool_type: ToolType,
 }
 
-impl FolderTree {
-    pub fn new() -> Self {
+impl AppInstance {
+    pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
+        setup_custom_fonts(&cc.egui_ctx);
         Self {
-            folder_path: "".to_string(),
-            files: vec![],
+            tool_type: ToolType::Unselected,
         }
     }
+}
 
-    pub fn add_choose_folder_button(&mut self, ui: &mut Ui) {
-        if !ui.button("Choose Folder").clicked() {
-            //未点击
-            return;
-        }
-        let picked_folder = FileDialog::new().pick_folder();
-        //未选择
-        if picked_folder.is_none() {
-            return;
-        }
-        let path = picked_folder.unwrap();
-        self.folder_path = path.display().to_string();
-        self.files.clear();
+fn setup_custom_fonts(ctx: &egui::Context) {
+    info!("font init start");
+    // Start with the default fonts (we will be adding to them rather than replacing them).
+    let mut fonts = egui::FontDefinitions::default();
 
-        //读取文件
-        let entries = fs::read_dir(&path);
-        if entries.is_err() {
-            error!("${path:?} read error:{:?}", entries.unwrap_err());
-            return;
-        }
+    // Install my own font (maybe supporting non-latin characters).
+    // .ttf and .otf files supported.
+    fonts.font_data.insert(
+        "msyh".to_owned(),
+        egui::FontData::from_static(include_bytes!(
+            "C:\\Windows\\Fonts\\msyh.ttc"
+        )),
+    );
 
-        //便利文件
-        for entry in entries.into_iter().flatten() {
-            if entry.is_err() {
-                continue;
-            }
-            let entry = entry.unwrap();
-            let metadata = entry.metadata();
-            if !metadata.unwrap().is_file() {
+    // Put my font first (highest priority) for proportional text:
+    fonts
+        .families
+        .entry(egui::FontFamily::Proportional)
+        .or_default()
+        .insert(0, "msyh".to_owned());
+
+    // Put my font as last fallback for monospace:
+    fonts
+        .families
+        .entry(egui::FontFamily::Monospace)
+        .or_default()
+        .push("msyh".to_owned());
+
+    // Tell egui to use these fonts:
+    ctx.set_fonts(fonts);
+    info!("font init finish");
+}
+
+
+impl AppInstance {
+    /// 设置工具类型
+    pub fn change_tool_type(&mut self, tool_type: ToolType) {
+        self.tool_type = tool_type;
+    }
+}
+
+impl eframe::App for AppInstance {
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        egui::CentralPanel::default().show(ctx, |ui| {
+            if self.tool_type == ToolType::Unselected {
+                //未选择工具时，选择工具
+                ui.heading("请选择要使用的工具");
+                egui::ComboBox::from_label("Colors")
+                    .selected_text(self.tool_type.as_label())
+                    .show_ui(ui, |ui| {
+                        for color in ToolType::iter() {
+                            ui.selectable_value(&mut self.tool_type, color.clone(), color.as_label());
+                        }
+                    });
+
+                // // 显示当前选择的颜色
+                // ui.label(format!("Selected color: {}", self.selected_color.as_str()));
+
                 return;
             }
-            if let Some(name) = entry.file_name().to_str() {
-                self.files.push(name.to_owned());
-            }
-        }
-    }
 
-    pub fn show_sub_file_info(&mut self, ui: &mut Ui) {
-        if self.folder_path.is_empty() {
-            return;
-        }
-        //存在文件再展示
-        ui.label(format!("Selected folder: {}", self.folder_path));
-        ui.separator();
-        egui::ScrollArea::vertical().show(ui, |ui| {
-            for file in &self.files {
-                ui.label(file);
+            let tool_type = &mut self.tool_type;
+            match tool_type {
+                ToolType::FolderTree(folder_tree) => {
+                    folder_tree.add_choose_folder_button(ui);
+                    folder_tree.show_sub_file_info(ui);
+                }
+                ToolType::DecompressStr => {}
+                ToolType::Unselected => {}
             }
-        });
+        },
+        );
     }
 }

@@ -12,7 +12,6 @@ eframe = "0.28.1"
 rfd = "0.14"
 
 [lib]
-name = "dev_tool_lib"
 path = "src/lib.rs"
 
 [[bin]]
