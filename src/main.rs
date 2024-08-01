@@ -8,5 +8,5 @@ fn main() {
 
     let mut options = eframe::NativeOptions::default();
     options.centered = true;
-    eframe::run_native("File Explorer", options, Box::new(|_cc| Ok(Box::new(folder_tree::AppInstance::new(_cc))))).expect("运行异常");
+    eframe::run_native("File Explorer", options, Box::new(|_cc| Ok(Box::new(dev_tool::AppInstance::new(_cc))))).expect("运行异常");
 }
