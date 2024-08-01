@@ -1,8 +1,8 @@
 use std::fs;
 use std::fs::DirEntry;
-
+use std::sync::Arc;
 use chrono::{DateTime, Local};
-use egui::{Align, Layout, Ui};
+use egui::{Align, Color32, Layout, Separator, TextStyle, Ui, Vec2};
 use log::error;
 use rfd::FileDialog;
 
@@ -112,27 +112,46 @@ impl FolderTreeTool {
             return;
         }
         ui.separator();
-        egui::ScrollArea::vertical().show(ui, |ui| {
-            let available_width = ui.available_width();
 
-            ui.horizontal(|ui| {
-                let file_name_column_header = egui::Label::new("文件名");
-                ui.add_sized(egui::vec2(available_width * 0.2, ui.spacing().interact_size.y), file_name_column_header);
-                let file_path_column_header = egui::Label::new("文件路径");
-                ui.add_sized(egui::vec2(available_width * 0.6, ui.spacing().interact_size.y), file_path_column_header);
-                let file_is_file_column_header = egui::Label::new("文件");
-                ui.add_sized(egui::vec2(available_width * 0.1, ui.spacing().interact_size.y), file_is_file_column_header);
-                let file_size_column_header = egui::Label::new("大小");
-                ui.add_sized(egui::vec2(available_width * 0.1, ui.spacing().interact_size.y), file_size_column_header);
-            });
+        let available_width = ui.available_width();
+
+        ui.horizontal(|ui| {
+            let file_name_column_header = egui::Label::new("文件名");
+            ui.add_sized(egui::vec2(available_width * 0.2, ui.spacing().interact_size.y), file_name_column_header);
+            let separator = Separator::default();
+            let separator = separator.spacing(0.0);
+            ui.add(separator);
+            let file_path_column_header = egui::Label::new("文件路径");
+            ui.add_sized(egui::vec2(available_width * 0.6, ui.spacing().interact_size.y), file_path_column_header);
+            let separator = Separator::default();
+            let separator = separator.spacing(0.0);
+            ui.add(separator);
+            let file_is_file_column_header = egui::Label::new("文件");
+            ui.add_sized(egui::vec2(available_width * 0.1, ui.spacing().interact_size.y), file_is_file_column_header);
+            let separator = Separator::default();
+            let separator = separator.spacing(0.0);
+            ui.add(separator);
+            let file_size_column_header = egui::Label::new("大小");
+            ui.add_sized(egui::vec2(available_width * 0.05, ui.spacing().interact_size.y), file_size_column_header);
+        });
+        let separator = Separator::default();
+        let separator = separator.spacing(0.0);
+        ui.add(separator);
+
+        egui::ScrollArea::vertical().show(ui, |ui| {
+
             for file in &self.files {
                 ui.horizontal(|ui| {
                     let file_name_column = egui::Label::new(&file.file_name).wrap();
                     ui.add_sized(egui::vec2(available_width * 0.2, ui.spacing().interact_size.y), file_name_column);
-
+                    let separator = Separator::default();
+                    let separator = separator.spacing(0.0);
+                    ui.add(separator);
                     let file_path_column = egui::Label::new(&file.file_path).wrap();
                     ui.add_sized(egui::vec2(available_width * 0.6, ui.spacing().interact_size.y), file_path_column);
-
+                    let separator = Separator::default();
+                    let separator = separator.spacing(0.0);
+                    ui.add(separator);
                     let file_is_file_column;
                     if file.is_file {
                         file_is_file_column = egui::Label::new("是");
@@ -140,9 +159,15 @@ impl FolderTreeTool {
                         file_is_file_column = egui::Label::new("否");
                     }
                     ui.add_sized(egui::vec2(available_width * 0.1, ui.spacing().interact_size.y), file_is_file_column);
+                    let separator = Separator::default();
+                    let separator = separator.spacing(0.0);
+                    ui.add(separator);
                     let file_size_column = egui::Label::new(file.file_size.to_string());
-                    ui.add_sized(egui::vec2(available_width * 0.1, ui.spacing().interact_size.y), file_size_column);
+                    ui.add_sized(egui::vec2(available_width * 0.05, ui.spacing().interact_size.y), file_size_column);
                 });
+                let separator = Separator::default();
+                let separator = separator.spacing(0.0);
+                ui.add(separator);
             }
         });
     }
