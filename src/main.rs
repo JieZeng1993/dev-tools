@@ -1,21 +1,23 @@
-use log::{info, warn};
-use eframe::{egui};
-use rfd::FileDialog;
+#![windows_subsystem = "windows"]
 use std::fs;
 
+use eframe::egui;
+use egui::Ui;
+use log::{info, warn};
+use rfd::FileDialog;
+
+use dev_tool_lib::{FolderTree, ToolType};
 
 
 struct App {
-    folder_path: String,
-    files: Vec<String>,
+    tool_type: ToolType,
 }
 
 impl App {
     fn new(cc: &eframe::CreationContext<'_>) -> Self {
         setup_custom_fonts(&cc.egui_ctx);
         Self {
-            folder_path: String::new(),
-            files: Vec::new(),
+            tool_type: ToolType::Unselected,
         }
     }
 }
@@ -56,34 +58,33 @@ fn setup_custom_fonts(ctx: &egui::Context) {
 impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
-            if ui.button("Choose Folder").clicked() {
-                if let Some(path) = FileDialog::new().pick_folder() {
-                    self.folder_path = path.display().to_string();
-                    self.files.clear();
-                    if let Ok(entries) = fs::read_dir(&path) {
-                        for entry in entries.flatten() {
-                            if let Ok(metadata) = entry.metadata() {
-                                if metadata.is_file() {
-                                    if let Some(name) = entry.file_name().to_str() {
-                                        self.files.push(name.to_owned());
-                                    }
-                                }
-                            }
+            if self.tool_type == ToolType::Unselected {
+                //未选择工具时，选择工具
+                ui.heading("请选择要使用的工具");
+                egui::ComboBox::from_label("Colors")
+                    .show_ui(ui, |ui| {
+                        for color in ToolType::iter() {
+                            ui.selectable_value(&mut self.tool_type, color.clone(), color.as_label());
                         }
-                    }
-                }
+                    });
+
+                // // 显示当前选择的颜色
+                // ui.label(format!("Selected color: {}", self.selected_color.as_str()));
+
+                return;
             }
 
-            if !self.folder_path.is_empty() {
-                ui.label(format!("Selected folder: {}", self.folder_path));
-                ui.separator();
-                egui::ScrollArea::vertical().show(ui, |ui| {
-                    for file in &self.files {
-                        ui.label(file);
-                    }
-                });
+            let tool_type =  &mut self.tool_type;
+            match tool_type {
+                ToolType::FolderTree(folder_tree) => {
+                    folder_tree.add_choose_folder_button(ui);
+                    folder_tree.show_sub_file_info(ui);
+                }
+                ToolType::DecompressStr => {}
+                ToolType::Unselected => {}
             }
-        });
+        },
+        );
     }
 }
 
