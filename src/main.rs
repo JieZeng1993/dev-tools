@@ -1,12 +1,6 @@
 #![windows_subsystem = "windows"]
-use std::fs;
 
-use eframe::egui;
-use egui::Ui;
-use log::{info, warn};
-use rfd::FileDialog;
-
-
+use log::info;
 
 fn main() {
     log4rs::init_file("config/log4rs.yaml", Default::default()).unwrap();
@@ -14,5 +8,5 @@ fn main() {
 
     let mut options = eframe::NativeOptions::default();
     options.centered = true;
-    eframe::run_native("File Explorer", options, Box::new(|_cc| Ok(Box::new(folder_tree::AppInstance::new(_cc)))));
+    eframe::run_native("File Explorer", options, Box::new(|_cc| Ok(Box::new(folder_tree::AppInstance::new(_cc))))).expect("运行异常");
 }
