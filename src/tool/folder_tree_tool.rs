@@ -94,6 +94,9 @@ impl FolderTreeTool {
             };
             self.files.push(file_info);
         }
+        self.files.sort_by(|a, b| {
+            a.file_size.cmp(&b.file_size).reverse().then_with(|| a.file_name.cmp(&b.file_name))
+        });
     }
 
     pub fn show_select_file_info(&mut self, ui: &mut Ui) {
