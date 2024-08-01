@@ -16,11 +16,13 @@ impl DecompressStrTool {
 
     pub fn show(&mut self, ctx: &egui::Context, ui: &mut Ui) {
         ui.horizontal(|ui| {
-            let source_text = ui.add(TextEdit::multiline(&mut self.source_text).hint_text("输入原始字符串"));
+            let available_width = ui.available_width();
+
+            let source_text = ui.add_sized(egui::vec2(available_width * 0.44, ui.spacing().interact_size.y), TextEdit::multiline(&mut self.source_text).hint_text("输入原始字符串"));
             if source_text.lost_focus() {
                 self.result_text = self.source_text.clone();
             }
-            ui.add(TextEdit::multiline(&mut self.result_text).hint_text("显示解压缩后的字符串"));
+            ui.add_sized(egui::vec2(available_width * 0.44, ui.spacing().interact_size.y), TextEdit::multiline(&mut self.result_text).hint_text("显示解压缩后的字符串"));
         });
     }
 }
