@@ -91,6 +91,7 @@ impl AppInstance {
 
 impl eframe::App for AppInstance {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+
         egui::CentralPanel::default().show(ctx, |ui| {
             if self.tool_type == ToolType::Unselected {
                 //未选择工具时，选择工具
