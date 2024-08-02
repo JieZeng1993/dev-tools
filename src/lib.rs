@@ -8,12 +8,14 @@ pub enum ToolType {
     Unselected,
     FolderTree(tool::FolderTreeTool),
     DecompressCompressStr(tool::DecompressCompressStrTool),
+    JsonFormat(tool::JsonFormatTool),
 }
 
 impl ToolType {
     // 获得枚举的所有值
     pub fn iter() -> Vec<ToolType> {
-        vec![ToolType::Unselected, ToolType::FolderTree(tool::FolderTreeTool::new()), ToolType::DecompressCompressStr(tool::DecompressCompressStrTool::new())]
+        vec![ToolType::Unselected, ToolType::FolderTree(tool::FolderTreeTool::new()), ToolType::DecompressCompressStr(tool::DecompressCompressStrTool::new())
+             , ToolType::JsonFormat(tool::JsonFormatTool::new())]
     }
 
     // 将枚举转换为字符串表示，用于显示
@@ -22,6 +24,7 @@ impl ToolType {
             ToolType::FolderTree(_) => "文件夹信息",
             ToolType::DecompressCompressStr(_) => "解压、压缩字符串",
             ToolType::Unselected => { "请选择" }
+            ToolType::JsonFormat(_) => { "json格式化" }
         }
     }
 }
@@ -120,7 +123,10 @@ impl eframe::App for AppInstance {
                     folder_tree.show_sub_file_info(ui);
                 }
                 ToolType::DecompressCompressStr(decompress_str) => {
-                    decompress_str.show(ctx,ui);
+                    decompress_str.show(ctx, ui);
+                }
+                ToolType::JsonFormat(json_format) => {
+                    json_format.show(ctx, ui);
                 }
                 ToolType::Unselected => {}
             }

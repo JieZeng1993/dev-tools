@@ -40,7 +40,7 @@ impl DecompressCompressStrTool {
             let text_edit_size = egui::vec2(half_width, tool_main_ui.available_height());
 
 
-            egui::ScrollArea::vertical().id_source("DecompressCompressStrTool compressed").max_height(tool_main_ui.available_height()).show(tool_main_ui, |tool_main_ui| {
+            egui::ScrollArea::vertical().id_source("DecompressCompressStrTool compressed ScrollArea").max_height(tool_main_ui.available_height()).show(tool_main_ui, |tool_main_ui| {
                 tool_main_ui.add_sized(text_edit_size, TextEdit::multiline(&mut self.source_text).hint_text("输入原始字符串"));
             });
 
@@ -49,7 +49,7 @@ impl DecompressCompressStrTool {
             //显示转换按钮
             self.show_transfer_button(ctx, tool_main_ui);
 
-            egui::ScrollArea::vertical().id_source("DecompressCompressStrTool origin_info").max_height(tool_main_ui.available_height()).show(tool_main_ui, |tool_main_ui| {
+            egui::ScrollArea::vertical().id_source("DecompressCompressStrTool origin_info ScrollArea").max_height(tool_main_ui.available_height()).show(tool_main_ui, |tool_main_ui| {
                 tool_main_ui.add_sized(text_edit_size, TextEdit::multiline(&mut self.result_text).hint_text("显示解压缩后的字符串"));
             });
         });
