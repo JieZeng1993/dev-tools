@@ -1,8 +1,7 @@
 use std::fs;
 use std::fs::DirEntry;
-use std::sync::Arc;
 use chrono::{DateTime, Local};
-use egui::{Align, Color32, Layout, Separator, TextStyle, Ui, Vec2};
+use egui::{Separator, Ui};
 use log::error;
 use rfd::FileDialog;
 
@@ -139,7 +138,6 @@ impl FolderTreeTool {
         ui.add(separator);
 
         egui::ScrollArea::vertical().show(ui, |ui| {
-
             for file in &self.files {
                 ui.horizontal(|ui| {
                     let file_name_column = egui::Label::new(&file.file_name).wrap();

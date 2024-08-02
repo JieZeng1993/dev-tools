@@ -93,13 +93,13 @@ impl AppInstance {
 }
 
 impl eframe::App for AppInstance {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+    fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
         // 顶部面板
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
             if self.tool_type == ToolType::Unselected {
                 //未选择工具时，选择工具
                 ui.heading("请选择要使用的工具");
-                egui::ComboBox::from_label("Colors")
+                egui::ComboBox::from_id_source("tool_type_check")
                     .selected_text(self.tool_type.as_label())
                     .show_ui(ui, |ui| {
                         for color in ToolType::iter() {
@@ -126,7 +126,7 @@ impl eframe::App for AppInstance {
                     decompress_str.show(ctx, ui);
                 }
                 ToolType::JsonFormat(json_format) => {
-                    json_format.show(ctx, ui);
+                    json_format.show(ctx, ui, frame);
                 }
                 ToolType::Unselected => {}
             }

@@ -1,14 +1,14 @@
 use std::io::{Read, Write};
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::Duration;
 
 use base64::Engine;
 use base64::engine::general_purpose;
 use eframe::emath::Align;
-use eframe::epaint::Margin;
-use egui::{Button, Context, Frame, Id, Layout, popup_below_widget, PopupCloseBehavior, TextEdit, Ui};
+use egui::{Button, Context, Layout, TextEdit, Ui};
 use flate2::{Compression, write::GzEncoder};
-use log::{error, info};
-use uuid::Uuid;
+use log::{debug, info};
+
+use crate::tool::get_seconds_since_epoch;
 
 #[derive(PartialEq, Clone)]
 pub struct DecompressCompressStrTool {
@@ -32,7 +32,7 @@ impl DecompressCompressStrTool {
 
     pub fn show(&mut self, ctx: &egui::Context, tool_main_ui: &mut Ui) {
         self.show_count = self.show_count + 1;
-        info!("DecompressCompressStrTool show:{}", self.show_count);
+        debug!("DecompressCompressStrTool show:{}", self.show_count);
         tool_main_ui.horizontal_top(|tool_main_ui| {
             let available_width = tool_main_ui.available_width();
             // 使用相同的尺寸配置两个 TextEdit 控件
@@ -62,7 +62,7 @@ impl DecompressCompressStrTool {
                 let decompress_result = self.decompress(self.source_text.clone());
                 if decompress_result.is_err() {
                     self.error_msg = format!("解压失败:{}", decompress_result.unwrap_err());
-                    self.error_start = Self::get_seconds_since_epoch();
+                    self.error_start = get_seconds_since_epoch();
                     ctx.request_repaint_after(Duration::from_secs(1));
                 } else {
                     self.result_text = decompress_result.unwrap();
@@ -73,7 +73,7 @@ impl DecompressCompressStrTool {
                 let compress_result = self.compress(self.result_text.clone());
                 if compress_result.is_err() {
                     self.error_msg = format!("压缩失败:{}", compress_result.unwrap_err());
-                    self.error_start = Self::get_seconds_since_epoch();
+                    self.error_start = get_seconds_since_epoch();
                     ctx.request_repaint_after(Duration::from_secs(1));
                 } else {
                     self.source_text = compress_result.unwrap();
@@ -83,8 +83,9 @@ impl DecompressCompressStrTool {
     }
 
     /// 暂时错误信息
+    /// TODO 消息弹窗需要实现全局
     fn show_error_msg(&mut self, ctx: &Context) {
-        if Self::get_seconds_since_epoch() - self.error_start > 5 && !self.error_msg.is_empty() {
+        if get_seconds_since_epoch() - self.error_start > 5 && !self.error_msg.is_empty() {
             info!("关闭弹窗消息");
             self.error_msg = "".to_string();  // 设置关闭行为
         }
@@ -131,13 +132,6 @@ impl DecompressCompressStrTool {
             });
     }
 
-    fn get_seconds_since_epoch() -> u64 {
-        let now = SystemTime::now();  // 获取当前系统时间
-        let since_the_epoch = now.duration_since(UNIX_EPOCH)
-            .expect("Time went backwards");  // 计算从UNIX纪元到现在的时间差
-        let seconds_since_epoch = since_the_epoch.as_secs();
-        seconds_since_epoch
-    }
 
     pub fn decompress(&mut self, str: String) -> Result<String, Box<dyn std::error::Error>> {
         let bytes = general_purpose::STANDARD
