@@ -8,6 +8,7 @@ use eframe::epaint::Margin;
 use egui::{Button, Context, Frame, Id, Layout, popup_below_widget, PopupCloseBehavior, TextEdit, Ui};
 use flate2::{Compression, write::GzEncoder};
 use log::{error, info};
+use uuid::Uuid;
 
 #[derive(PartialEq, Clone)]
 pub struct DecompressCompressStrTool {
@@ -32,53 +33,63 @@ impl DecompressCompressStrTool {
     pub fn show(&mut self, ctx: &egui::Context, tool_main_ui: &mut Ui) {
         self.show_count = self.show_count + 1;
         info!("DecompressCompressStrTool show:{}", self.show_count);
-
         tool_main_ui.horizontal_top(|tool_main_ui| {
             let available_width = tool_main_ui.available_width();
-            let height = tool_main_ui.spacing().interact_size.y;
-
             // 使用相同的尺寸配置两个 TextEdit 控件
-            let half_width = available_width * 0.49;
-            let text_edit_size = egui::vec2(half_width, height);
+            let half_width = (available_width - 40.0) * 0.5;
+            let text_edit_size = egui::vec2(half_width, tool_main_ui.available_height());
 
-            tool_main_ui.add_sized(text_edit_size, TextEdit::multiline(&mut self.source_text).hint_text("输入原始字符串"));
 
-            self.show_error_msg(ctx);
-
-            tool_main_ui.vertical(|ui| {
-                if ui.add(Button::new(">>")).clicked() {
-                    let decompress_result = self.decompress(self.source_text.clone());
-                    if decompress_result.is_err() {
-                        self.error_msg = format!("解压失败:{}", decompress_result.unwrap_err());
-                        self.error_start = Self::get_seconds_since_epoch();
-                        ctx.request_repaint_after(Duration::from_secs(1));
-                    } else {
-                        self.result_text = decompress_result.unwrap();
-                    }
-                }
-                ui.add_space(10.0);
-                if ui.add(Button::new("<<")).clicked() {
-                    let compress_result = self.compress(self.result_text.clone());
-                    if compress_result.is_err() {
-                        self.error_msg = format!("压缩失败:{}", compress_result.unwrap_err());
-                        self.error_start = Self::get_seconds_since_epoch();
-                        ctx.request_repaint_after(Duration::from_secs(1));
-                    } else {
-                        self.source_text = compress_result.unwrap();
-                    }
-                }
+            egui::ScrollArea::vertical().id_source("DecompressCompressStrTool compressed").max_height(tool_main_ui.available_height()).show(tool_main_ui, |tool_main_ui| {
+                tool_main_ui.add_sized(text_edit_size, TextEdit::multiline(&mut self.source_text).hint_text("输入原始字符串"));
             });
-            tool_main_ui.add_sized(text_edit_size, TextEdit::multiline(&mut self.result_text).hint_text("显示解压缩后的字符串"));
+
+            //展示错误消息
+            self.show_error_msg(ctx);
+            //显示转换按钮
+            self.show_transfer_button(ctx, tool_main_ui);
+
+            egui::ScrollArea::vertical().id_source("DecompressCompressStrTool origin_info").max_height(tool_main_ui.available_height()).show(tool_main_ui, |tool_main_ui| {
+                tool_main_ui.add_sized(text_edit_size, TextEdit::multiline(&mut self.result_text).hint_text("显示解压缩后的字符串"));
+            });
+        });
+    }
+
+    /// 显示转换按钮
+    fn show_transfer_button(&mut self, ctx: &Context, tool_main_ui: &mut Ui) {
+        tool_main_ui.vertical(|ui| {
+            if ui.add(Button::new(">>")).clicked() {
+                let decompress_result = self.decompress(self.source_text.clone());
+                if decompress_result.is_err() {
+                    self.error_msg = format!("解压失败:{}", decompress_result.unwrap_err());
+                    self.error_start = Self::get_seconds_since_epoch();
+                    ctx.request_repaint_after(Duration::from_secs(1));
+                } else {
+                    self.result_text = decompress_result.unwrap();
+                }
+            }
+            ui.add_space(10.0);
+            if ui.add(Button::new("<<")).clicked() {
+                let compress_result = self.compress(self.result_text.clone());
+                if compress_result.is_err() {
+                    self.error_msg = format!("压缩失败:{}", compress_result.unwrap_err());
+                    self.error_start = Self::get_seconds_since_epoch();
+                    ctx.request_repaint_after(Duration::from_secs(1));
+                } else {
+                    self.source_text = compress_result.unwrap();
+                }
+            }
         });
     }
 
     /// 暂时错误信息
     fn show_error_msg(&mut self, ctx: &Context) {
         if Self::get_seconds_since_epoch() - self.error_start > 5 && !self.error_msg.is_empty() {
+            info!("关闭弹窗消息");
             self.error_msg = "".to_string();  // 设置关闭行为
         }
 
-        if !self.error_msg.is_empty() {
+        if self.error_msg.is_empty() {
             return;
         }
 
@@ -91,6 +102,7 @@ impl DecompressCompressStrTool {
             screen_rect.center().y - window_size.y / 2.0,
         );
 
+        //等一秒再刷新一次
         ctx.request_repaint_after(Duration::from_secs(1));
         egui::Window::new("")
             .collapsible(false)

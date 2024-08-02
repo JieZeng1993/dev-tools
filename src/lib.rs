@@ -91,8 +91,8 @@ impl AppInstance {
 
 impl eframe::App for AppInstance {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-
-        egui::CentralPanel::default().show(ctx, |ui| {
+        // 顶部面板
+        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
             if self.tool_type == ToolType::Unselected {
                 //未选择工具时，选择工具
                 ui.heading("请选择要使用的工具");
@@ -107,7 +107,9 @@ impl eframe::App for AppInstance {
             }
             //设置全局的退出
             self.reselect_tool(ui);
+        });
 
+        egui::CentralPanel::default().show(ctx, |ui| {
             let tool_type = &mut self.tool_type;
             match tool_type {
                 ToolType::FolderTree(folder_tree) => {
