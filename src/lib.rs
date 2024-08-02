@@ -7,20 +7,20 @@ mod tool;
 pub enum ToolType {
     Unselected,
     FolderTree(tool::FolderTreeTool),
-    DecompressStr(tool::DecompressStrTool),
+    DecompressCompressStr(tool::DecompressCompressStrTool),
 }
 
 impl ToolType {
     // 获得枚举的所有值
     pub fn iter() -> Vec<ToolType> {
-        vec![ToolType::Unselected, ToolType::FolderTree(tool::FolderTreeTool::new()), ToolType::DecompressStr(tool::DecompressStrTool::new())]
+        vec![ToolType::Unselected, ToolType::FolderTree(tool::FolderTreeTool::new()), ToolType::DecompressCompressStr(tool::DecompressCompressStrTool::new())]
     }
 
     // 将枚举转换为字符串表示，用于显示
     pub fn as_label(&self) -> &str {
         match self {
             ToolType::FolderTree(_) => "文件夹信息",
-            ToolType::DecompressStr(_) => "解压字符串",
+            ToolType::DecompressCompressStr(_) => "解压、压缩字符串",
             ToolType::Unselected => { "请选择" }
         }
     }
@@ -116,7 +116,7 @@ impl eframe::App for AppInstance {
                     });
                     folder_tree.show_sub_file_info(ui);
                 }
-                ToolType::DecompressStr(decompress_str) => {
+                ToolType::DecompressCompressStr(decompress_str) => {
                     decompress_str.show(ctx,ui);
                 }
                 ToolType::Unselected => {}

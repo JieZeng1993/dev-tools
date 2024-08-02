@@ -11,3 +11,6 @@ egui = "0.28.1"
 eframe = "0.28.1"
 rfd = "0.14"
 chrono = "0.4"
+
+base64 = "0.21.0"
+flate2 = { version = "1.0.17" }
