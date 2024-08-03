@@ -1,4 +1,5 @@
-// #![windows_subsystem = "windows"]
+///debug时显示控制台，非debug时，不显示控制台
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use log::info;
 

@@ -2,12 +2,13 @@
 name = "dev-tool"
 version = "0.1.0"
 edition = "2021"
-include = ["config","src"]
-
+description = "开发中使用到的各种工具"
+license = "GPL-3.0"
+authors = ["曾杰"]
 
 [dependencies]
 log = "0.4"
-log4rs = {version = "1.0"  , features = ["gzip"]}
+log4rs = { version = "1.0", features = ["gzip"] }
 
 egui = "0.28.1"
 eframe = "0.28.1"
@@ -20,7 +21,3 @@ flate2 = { version = "1.0" }
 uuid = { version = "1", features = ["v4"] }  # 请选择最新稳定版本
 
 serde_json = "1.0"
-
-[lib]
-name = "dev_tool"
-path = "src/lib.rs"
