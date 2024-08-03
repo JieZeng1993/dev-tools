@@ -4,6 +4,9 @@ appenders:
     kind: console
     encoder:
       pattern: "{d(%Y-%m-%d %H:%M:%S)} - {l} - {m}\n"
+    filters:
+      - kind: threshold
+        level: debug
   rolling:
     kind: rolling_file
     path: "logs/log.log"
@@ -19,9 +22,12 @@ appenders:
         pattern: "logs/log.{}.gz"
         base: 1
         count: 5
+    filters:
+      - kind: threshold
+        level: info
 
 root:
-  level: info
+  level: debug
   appenders:
     - stdout
     - rolling
