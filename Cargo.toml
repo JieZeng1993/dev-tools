@@ -5,6 +5,7 @@ edition = "2021"
 description = "开发中使用到的各种工具"
 license = "GPL-3.0"
 authors = ["曾杰"]
+build = "build.rs"
 
 [dependencies]
 log = "0.4"
@@ -21,3 +22,9 @@ flate2 = { version = "1.0" }
 uuid = { version = "1", features = ["v4"] }  # 请选择最新稳定版本
 
 serde_json = "1.0"
+
+image = "0.25"
+
+[build-dependencies]
+# 设置图标
+embed-resource =  "1.7.2"

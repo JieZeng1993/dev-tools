@@ -43,7 +43,7 @@ impl AppInstance {
 }
 
 fn setup_custom_fonts(ctx: &egui::Context) {
-    info!("font init start");
+    info!("字体初始化开始");
     // Start with the default fonts (we will be adding to them rather than replacing them).
     let mut fonts = egui::FontDefinitions::default();
 
@@ -51,28 +51,24 @@ fn setup_custom_fonts(ctx: &egui::Context) {
     // .ttf and .otf files supported.
     fonts.font_data.insert(
         "msyh".to_owned(),
-        egui::FontData::from_static(include_bytes!(
-            "C:\\Windows\\Fonts\\msyh.ttc"
-        )),
+        egui::FontData::from_static(include_bytes!("..\\static\\font\\msyh.ttc")),
     );
 
     // Put my font first (highest priority) for proportional text:
-    fonts
-        .families
+    fonts.families
         .entry(egui::FontFamily::Proportional)
         .or_default()
         .insert(0, "msyh".to_owned());
 
     // Put my font as last fallback for monospace:
-    fonts
-        .families
+    fonts.families
         .entry(egui::FontFamily::Monospace)
         .or_default()
         .push("msyh".to_owned());
 
     // Tell egui to use these fonts:
     ctx.set_fonts(fonts);
-    info!("font init finish");
+    info!("字体初始化完成");
 }
 
 
