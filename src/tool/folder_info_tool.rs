@@ -1,5 +1,6 @@
 use std::fs;
 use std::fs::DirEntry;
+
 use chrono::{DateTime, Local};
 use egui::{Separator, Ui};
 use log::error;
@@ -160,7 +161,7 @@ impl FolderInfoTool {
                     let separator = Separator::default();
                     let separator = separator.spacing(0.0);
                     ui.add(separator);
-                    let file_size_column = egui::Label::new(file.file_size.to_string());
+                    let file_size_column = egui::Label::new(crate::util::file_util::human_readable_size(file.file_size));
                     ui.add_sized(egui::vec2(available_width * 0.05, ui.spacing().interact_size.y), file_size_column);
                 });
                 let separator = Separator::default();
@@ -178,7 +179,7 @@ fn get_file_size(path: &DirEntry) -> u64 {
     }
     let paths = fs::read_dir(path.path());
     if paths.is_err() {
-        println!("读取文件失败 = {:?}", paths);
+        error!("读取文件:{} ,失败: {:?}", path.path().to_str().unwrap_or_default(), paths);
         return 0;
     }
     let paths = paths.unwrap();

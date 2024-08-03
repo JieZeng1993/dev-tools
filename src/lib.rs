@@ -2,6 +2,7 @@ use egui::Ui;
 use log::info;
 
 mod tool;
+mod util;
 
 #[derive(PartialEq, Clone)]
 pub enum ToolType {
