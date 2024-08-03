@@ -1,5 +1,5 @@
 [package]
-name = "dev-tool"
+name = "dev-tools"
 version = "0.1.0"
 edition = "2021"
 description = "开发中使用到的各种工具"

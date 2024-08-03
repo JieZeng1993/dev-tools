@@ -11,7 +11,7 @@ fn main() {
     let options = load_native_options();
     info!("加载原生配置 完成");
     //运行
-    eframe::run_native("开发工具箱", options, Box::new(|_cc| Ok(Box::new(dev_tool::AppInstance::new(_cc))))).expect("运行异常");
+    eframe::run_native("开发工具箱", options, Box::new(|_cc| Ok(Box::new(dev_tools::AppInstance::new(_cc))))).expect("运行异常");
 }
 
 ///加载配置
