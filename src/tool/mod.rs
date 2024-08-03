@@ -1,10 +1,10 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
 pub use decompress_compress_str_tool::DecompressCompressStrTool;
-pub use folder_tree_tool::FolderTreeTool;
+pub use folder_info_tool::FolderInfoTool;
 pub use json_format_tool::JsonFormatTool;
 
-mod folder_tree_tool;
+mod folder_info_tool;
 mod decompress_compress_str_tool;
 mod json_format_tool;
 

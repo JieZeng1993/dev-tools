@@ -6,7 +6,7 @@ mod tool;
 #[derive(PartialEq, Clone)]
 pub enum ToolType {
     Unselected,
-    FolderTree(tool::FolderTreeTool),
+    FolderInfo(tool::FolderInfoTool),
     DecompressCompressStr(tool::DecompressCompressStrTool),
     JsonFormat(tool::JsonFormatTool),
 }
@@ -14,14 +14,14 @@ pub enum ToolType {
 impl ToolType {
     // 获得枚举的所有值
     pub fn iter() -> Vec<ToolType> {
-        vec![ToolType::Unselected, ToolType::FolderTree(tool::FolderTreeTool::new()), ToolType::DecompressCompressStr(tool::DecompressCompressStrTool::new())
+        vec![ToolType::Unselected, ToolType::FolderInfo(tool::FolderInfoTool::new()), ToolType::DecompressCompressStr(tool::DecompressCompressStrTool::new())
              , ToolType::JsonFormat(tool::JsonFormatTool::new())]
     }
 
     // 将枚举转换为字符串表示，用于显示
     pub fn as_label(&self) -> &str {
         match self {
-            ToolType::FolderTree(_) => "文件夹信息",
+            ToolType::FolderInfo(_) => "文件夹信息",
             ToolType::DecompressCompressStr(_) => "解压、压缩字符串",
             ToolType::Unselected => { "请选择" }
             ToolType::JsonFormat(_) => { "json格式化" }
@@ -111,12 +111,12 @@ impl eframe::App for AppInstance {
         egui::CentralPanel::default().show(ctx, |ui| {
             let tool_type = &mut self.tool_type;
             match tool_type {
-                ToolType::FolderTree(folder_tree) => {
+                ToolType::FolderInfo(folder_info) => {
                     ui.horizontal(|ui| {
-                        folder_tree.add_choose_folder_button(ui);
-                        folder_tree.show_select_file_info(ui);
+                        folder_info.add_choose_folder_button(ui);
+                        folder_info.show_select_file_info(ui);
                     });
-                    folder_tree.show_sub_file_info(ui);
+                    folder_info.show_sub_file_info(ui);
                 }
                 ToolType::DecompressCompressStr(decompress_str) => {
                     decompress_str.show(ctx, ui);

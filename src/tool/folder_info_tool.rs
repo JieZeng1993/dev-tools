@@ -9,7 +9,7 @@ use crate::{AppInstance, ToolType};
 
 /// 文件夹处理
 #[derive(PartialEq, Clone)]
-pub struct FolderTreeTool {
+pub struct FolderInfoTool {
     pub folder_path: String,
     pub files: Vec<FileInfo>,
     pub loading: bool,
@@ -24,7 +24,7 @@ pub struct FileInfo {
     pub(crate) is_file: bool,
 }
 
-impl FolderTreeTool {
+impl FolderInfoTool {
     pub fn new() -> Self {
         Self {
             folder_path: "".to_string(),
