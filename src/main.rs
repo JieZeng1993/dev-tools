@@ -17,7 +17,7 @@ fn main() {
 ///加载配置
 fn load_native_options() -> eframe::NativeOptions {
     //图标路径
-    let ico_path = "static/app.ico1";
+    let ico_path = "static/app.ico";
     //加载图标数据
     let icon_image = load_image_from_path(ico_path).map_or(
         {
