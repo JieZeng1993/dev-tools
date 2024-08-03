@@ -27,8 +27,10 @@ DisableProgramGroupPage=yes
 LicenseFile=.\License.rtf
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
+DisableDirPage=no
 OutputDir=.\target\release
 OutputBaseFilename=dev-tool-install
+SetupIconFile=.\static\app.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
