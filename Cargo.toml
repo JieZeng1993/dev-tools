@@ -2,7 +2,7 @@
 name = "dev-tool"
 version = "0.1.0"
 edition = "2021"
-include = ["config/*"]
+include = ["config/*","src/main.rs"]
 
 
 [dependencies]
@@ -21,6 +21,3 @@ uuid = { version = "1", features = ["v4"] }  # 请选择最新稳定版本
 
 serde_json = "1.0"
 
-[[bin]]
-name = "dev-tool"
-path = "src/main.rs"
