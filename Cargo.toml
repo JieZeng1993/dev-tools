@@ -2,6 +2,8 @@
 name = "dev-tool"
 version = "0.1.0"
 edition = "2021"
+include = ["config/*"]
+
 
 [dependencies]
 log = "0.4"
